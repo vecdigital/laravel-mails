@@ -3,6 +3,7 @@
 namespace Vormkracht10\Mails\Drivers;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Vormkracht10\Mails\Models\Mail;
 
@@ -72,6 +73,8 @@ abstract class MailDriver
 
         if (method_exists($this, $method)) {
             // log mail event
+            Log::info('data from payload to store in db');
+            Log::info($data);
             $mail->events()->create($data);
 
             // update mail record with timestamp

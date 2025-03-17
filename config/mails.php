@@ -44,6 +44,20 @@ return [
         'queue' => env('MAILS_QUEUE_WEBHOOKS', false),
     ],
 
+    // Provider-specific configurations
+    'providers' => [
+        'ses' => [
+            // Configuration set name for AWS SES
+            'configuration_set_name' => env('MAILS_SES_CONFIGURATION_SET', 'mail-tracking-set'),
+
+            // Add environment prefix (local-, staging-, etc.) to configuration set name
+            'use_environment_prefix' => env('MAILS_SES_USE_ENVIRONMENT_PREFIX', true),
+
+            // SNS topic name
+            'sns_topic_name' => env('MAILS_SES_SNS_TOPIC_NAME', 'mail-tracking-webhook'),
+        ],
+    ],
+
     // Logging mails
     'logging' => [
 

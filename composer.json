@@ -17,9 +17,12 @@
     ],
     "require": {
         "php": "^8.1",
+        "ext-openssl": "*",
         "illuminate/contracts": "^10.0 || ^11.0 || ^12.0",
         "laravel/helpers": "^1.7.0",
-        "spatie/laravel-package-tools": "^1.15.0"
+        "league/flysystem-aws-s3-v3": "^3.29",
+        "spatie/laravel-package-tools": "^1.15.0",
+        "ext-simplexml": "*"
     },
     "require-dev": {
         "larastan/larastan": "^3.0",
@@ -68,6 +71,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "Vormkracht10\\Mails\\SesTransportServiceProvider",
                 "Vormkracht10\\Mails\\MailsServiceProvider"
             ]
         }

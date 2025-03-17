@@ -6,14 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use ReflectionException;
 use Symfony\Component\Mime\Email;
 use Vormkracht10\Mails\Contracts\HasAssociatedMails;
+use Vormkracht10\Mails\Helpers\ModelIdentifier;
 
 /**
  * @mixin Mailable
  */
 trait AssociatesModels
 {
+    /**
+     * Associate model(s) with this mailable
+     *
+     * @param  Model|array|Collection  $model
+     */
     public function associateWith($model): void
     {
         if ($model instanceof Collection) {
@@ -26,6 +33,8 @@ trait AssociatesModels
     }
 
     /**
+     * Associate multiple models with this mailable
+     *
      * @param  array<Model&HasAssociatedMails>  $models
      */
     public function associateMany(array $models): void
@@ -39,6 +48,8 @@ trait AssociatesModels
     }
 
     /**
+     * Generate an encrypted header for model associations
+     *
      * @param  array<Model>  $models
      */
     protected function getEncryptedAssociatedModelsHeader(array $models): string
@@ -52,5 +63,35 @@ trait AssociatesModels
         $header = json_encode($identifiers);
 
         return encrypt($header);
+    }
+
+    /**
+     * Associate models for queued mailables using stored model identifiers
+     */
+    protected function processQueuedModelAssociations(): void
+    {
+        if (isset($this->viewData['associatedModelIds']) && ! empty($this->viewData['associatedModelIds'])) {
+            $models = ModelIdentifier::identifiersToModels($this->viewData['associatedModelIds']);
+
+            // Associate with the retrieved models
+            if (!empty($models)) {
+                $this->associateWith($models);
+            }
+        }
+    }
+
+    /**
+     * Build the view data for the message.
+     *
+     * @throws ReflectionException
+     */
+    public function buildViewData(): array
+    {
+        $data = parent::buildViewData();
+
+        // Process any queued model associations before building the message
+        $this->processQueuedModelAssociations();
+
+        return $data;
     }
 }
