@@ -46,7 +46,7 @@ class SesTransport extends LaravelSesTransport implements Stringable
         $options['ConfigurationSetName'] = $this->configSetName;
         parent::__construct($ses, $options);
 
-        Log::debug('SES Transport initialized with configuration set', ['name' => $this->configSetName]);
+        //         Log::debug('SES Transport initialized with configuration set', ['name' => $this->configSetName]);
     }
 
     /**
@@ -131,9 +131,9 @@ class SesTransport extends LaravelSesTransport implements Stringable
 
             // If the error is about configuration set not existing, try to create it
             if (str_contains($reason, 'Configuration set') && str_contains($reason, 'does not exist')) {
-                Log::warning('Configuration set does not exist, attempting to create it', [
-                    'configSetName' => $this->configSetName,
-                ]);
+                //         Log::warning('Configuration set does not exist, attempting to create it', [
+//                    'configSetName' => $this->configSetName,
+//                ]);
 
                 // Try to create the configuration set
                 if ($this->createConfigurationSet()) {
@@ -158,17 +158,17 @@ class SesTransport extends LaravelSesTransport implements Stringable
     protected function ensureConfigurationSetExists(): void
     {
         try {
-            Log::debug('Checking if SES configuration set exists', ['configSetName' => $this->configSetName]);
+            //         Log::debug('Checking if SES configuration set exists', ['configSetName' => $this->configSetName]);
 
             // Check if the configuration set exists
             $this->ses->describeConfigurationSet([
                 'ConfigurationSetName' => $this->configSetName,
             ]);
 
-            Log::debug('SES configuration set exists', ['configSetName' => $this->configSetName]);
+            //         Log::debug('SES configuration set exists', ['configSetName' => $this->configSetName]);
             // If we reach here, the configuration set exists
         } catch (AwsException $e) {
-            Log::info('SES configuration set does not exist, creating it', ['configSetName' => $this->configSetName]);
+            //         Log::info('SES configuration set does not exist, creating it', ['configSetName' => $this->configSetName]);
 
             // Configuration set doesn't exist, create it
             $this->createConfigurationSet();
@@ -187,22 +187,22 @@ class SesTransport extends LaravelSesTransport implements Stringable
                 ],
             ]);
 
-            Log::info('SES configuration set created successfully', ['configSetName' => $this->configSetName]);
+            //         Log::info('SES configuration set created successfully', ['configSetName' => $this->configSetName]);
 
             return true;
         } catch (AwsException $e) {
             // If it already exists, that's fine too
             if (str_contains($e->getAwsErrorMessage() ?? '', 'ConfigurationSetAlreadyExists')) {
-                Log::info('SES configuration set already exists', ['configSetName' => $this->configSetName]);
+                //         Log::info('SES configuration set already exists', ['configSetName' => $this->configSetName]);
 
                 return true;
             }
 
             // Log the error but don't fail the message send
-            Log::error('Failed to create SES configuration set', [
-                'configSetName' => $this->configSetName,
-                'error' => $e->getMessage(),
-            ]);
+            //         Log::error('Failed to create SES configuration set', [
+//                'configSetName' => $this->configSetName,
+//                'error' => $e->getMessage(),
+//            ]);
 
             return false;
         }

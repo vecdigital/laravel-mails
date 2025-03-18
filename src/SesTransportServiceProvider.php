@@ -27,7 +27,7 @@ class SesTransportServiceProvider extends ServiceProvider
     public function boot()
     {
         // Log for debugging
-        Log::info('SesTransportServiceProvider boot method called');
+//        Log::info('SesTransportServiceProvider boot method called');
 
         // This is the key part - replacing Laravel's builtin SesTransport with our own
         $this->app->bind(SesTransport::class, function ($app) {
@@ -64,11 +64,11 @@ class SesTransportServiceProvider extends ServiceProvider
             // Create our custom transport using the config
             $options = $app['config']->get('mail.mailers.ses.options', []);
 
-            Log::info('Creating custom SesTransport', [
-                'region' => $config['region'],
-                'hasKey' => !empty($config['key']),
-                'hasSecret' => !empty($config['secret']),
-            ]);
+//            Log::info('Creating custom SesTransport', [
+//                'region' => $config['region'],
+//                'hasKey' => !empty($config['key']),
+//                'hasSecret' => !empty($config['secret']),
+//            ]);
 
             return new Transports\SesTransport($ses, $options);
         });

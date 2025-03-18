@@ -22,18 +22,18 @@ class WebhookController
         $contentType = $request->header('Content-Type');
 
         // Log the raw input for debugging
-        Log::info('Raw webhook received', [
-            'content_type' => $contentType
-        ]);
+//        Log::info('Raw webhook received', [
+//            'content_type' => $contentType
+//        ]);
 
         // Parse the input if content type is text/plain and input looks like JSON
         if (str_contains($contentType, 'text/plain')) {
             // Get the raw input
             $rawInput = file_get_contents('php://input');
 
-            Log::info('Raw webhook received', [
-                'raw_input' => $rawInput,
-            ]);
+//            Log::info('Raw webhook received', [
+//                'raw_input' => $rawInput,
+//            ]);
             try {
                 // Attempt to decode the raw input as JSON
                 $jsonData = json_decode($rawInput, true);
@@ -43,21 +43,21 @@ class WebhookController
                     // Manually set the request input
                     $request->replace($jsonData);
 
-                    Log::info('Webhook data updated from JSON payload', [
-                        'parsed_data' => $jsonData
-                    ]);
+//                    Log::info('Webhook data updated from JSON payload', [
+//                        'parsed_data' => $jsonData
+//                    ]);
                 }
             } catch (Exception $e) {
-                Log::error('Error parsing webhook JSON', [
-                    'error' => $e->getMessage(),
-                    'raw_input' => $rawInput
-                ]);
+//                Log::error('Error parsing webhook JSON', [
+//                    'error' => $e->getMessage(),
+//                    'raw_input' => $rawInput
+//                ]);
             }
         }
 
         // Log the final request data
-        Log::info('Webhook Post received', $request->post());
-        Log::info('Webhook All received', $request->all());
+//        Log::info('Webhook Post received', $request->post());
+//        Log::info('Webhook All received', $request->all());
 
         if (! MailProvider::with($provider)->verifyWebhookSignature($request->all())) {
             return response('Invalid signature.', status: 400);

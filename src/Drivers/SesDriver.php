@@ -51,7 +51,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             }
         }
 
-        Log::debug('SES configuration set name initialized', ['name' => $this->configurationSetName]);
+        //         Log::debug('SES configuration set name initialized', ['name' => $this->configurationSetName]);
     }
 
     /**
@@ -70,7 +70,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             $key = config('services.ses.key');
             $secret = config('services.ses.secret');
 
-            Log::info('Starting SES webhook registration process');
+            //         Log::info('Starting SES webhook registration process');
 
             // Initialize clients
             $snsClient = Http::withBasicAuth($key, $secret)
@@ -105,18 +105,18 @@ class SesDriver extends MailDriver implements MailDriverContract
             // Step 4: Configure SES with events
             $this->configureSesEvents($sesClient, $topicArn, $trackingConfig, $components);
 
-            Log::info('SES webhook registration process completed');
+            //         Log::info('SES webhook registration process completed');
 
         } catch (ConnectionException $e) {
-            Log::error('AWS connection failed during webhook registration: ' . $e->getMessage());
+            //         Log::error('AWS connection failed during webhook registration: ' . $e->getMessage());
             throw $e;
         } catch (Throwable $e) {
-            Log::error('Error registering SES webhooks: ' . $e->getMessage(), [
-                'exception' => get_class($e),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            //         Log::error('Error registering SES webhooks: ' . $e->getMessage(), [
+//                'exception' => get_class($e),
+//                'file' => $e->getFile(),
+//                'line' => $e->getLine(),
+//                'trace' => $e->getTraceAsString()
+//            ]);
             $components->error('SES webhook registration failed: ' . $e->getMessage());
         }
     }
@@ -154,14 +154,14 @@ class SesDriver extends MailDriver implements MailDriverContract
                 ]);
 
                 $components->info("SES configuration set created: {$this->configurationSetName}");
-                Log::info("SES configuration set created: {$this->configurationSetName}");
+                //         Log::info("SES configuration set created: {$this->configurationSetName}");
                 $this->configSetExists = true;
                 return true;
             } catch (Exception $e) {
                 // Check if it already exists
                 if (str_contains($e->getMessage(), 'ConfigurationSetAlreadyExists')) {
                     $components->info("SES configuration set already exists: {$this->configurationSetName}");
-                    Log::info("SES configuration set already exists: {$this->configurationSetName}");
+                    //         Log::info("SES configuration set already exists: {$this->configurationSetName}");
                     $this->configSetExists = true;
                     return true;
                 }
@@ -171,10 +171,10 @@ class SesDriver extends MailDriver implements MailDriverContract
             }
         } catch (Throwable $e) {
             $components->error('Exception while creating configuration set: ' . $e->getMessage());
-            Log::error('Failed to create configuration set', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('Failed to create configuration set', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -210,19 +210,19 @@ class SesDriver extends MailDriver implements MailDriverContract
                 ]);
 
                 $components->info("SES configuration set already exists: {$this->configurationSetName}");
-                Log::info("SES configuration set already exists: {$this->configurationSetName}");
+                //         Log::info("SES configuration set already exists: {$this->configurationSetName}");
                 return true;
             } catch (Exception $e) {
                 if (str_contains($e->getMessage(), 'ConfigurationSetDoesNotExist')) {
-                    Log::debug('Configuration set does not exist');
+                    //         Log::debug('Configuration set does not exist');
                     return false;
                 }
 
-                Log::debug('Error checking configuration set: ' . $e->getMessage());
+                //         Log::debug('Error checking configuration set: ' . $e->getMessage());
                 return false;
             }
         } catch (Throwable $e) {
-            Log::debug('Error creating SES client: ' . $e->getMessage());
+            //         Log::debug('Error creating SES client: ' . $e->getMessage());
             return false;
         }
     }
@@ -264,7 +264,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             ]);
 
             // Log that we're using AWS SDK
-            Log::info('Creating SNS topic using AWS SDK', ['topicName' => $topicName]);
+            //         Log::info('Creating SNS topic using AWS SDK', ['topicName' => $topicName]);
 
             // First check if topic already exists
             try {
@@ -275,7 +275,7 @@ class SesDriver extends MailDriver implements MailDriverContract
                     $topicArn = $topic['TopicArn'] ?? '';
                     if (str_contains($topicArn, $topicName)) {
                         $components->info("Using existing SNS topic: {$topicArn}");
-                        Log::info("Using existing SNS topic: {$topicArn}");
+                        //         Log::info("Using existing SNS topic: {$topicArn}");
                         return $topicArn;
                     }
                 }
@@ -284,10 +284,10 @@ class SesDriver extends MailDriver implements MailDriverContract
             } catch (Exception $e) {
                 // Log the error but continue to try creating a topic
                 $components->info("Error listing topics: " . $e->getMessage());
-                Log::warning("Error listing SNS topics", [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage()
-                ]);
+                //         Log::warning("Error listing SNS topics", [
+//                    'exception' => get_class($e),
+//                    'message' => $e->getMessage()
+//                ]);
             }
 
             // Create a new topic
@@ -300,7 +300,7 @@ class SesDriver extends MailDriver implements MailDriverContract
 
                 if ($topicArn) {
                     $components->info("SES SNS topic created: $topicArn");
-                    Log::info("SES SNS topic created: $topicArn");
+                    //         Log::info("SES SNS topic created: $topicArn");
                     return $topicArn;
                 }
 
@@ -308,21 +308,21 @@ class SesDriver extends MailDriver implements MailDriverContract
                 return null;
             } catch (Exception $e) {
                 $components->error('Failed to create SES SNS topic: ' . $e->getMessage());
-                Log::error('SNS CreateTopic error', [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage()
-                ]);
+                //         Log::error('SNS CreateTopic error', [
+//                    'exception' => get_class($e),
+//                    'message' => $e->getMessage()
+//                ]);
                 return null;
             }
         } catch (Throwable $e) {
             $components->error('Exception while creating SNS topic: ' . $e->getMessage());
-            Log::error('Failed to create SNS topic', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            //         Log::error('Failed to create SNS topic', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage(),
+//                'file' => $e->getFile(),
+//                'line' => $e->getLine(),
+//                'trace' => $e->getTraceAsString()
+//            ]);
             return null;
         }
     }
@@ -365,13 +365,13 @@ class SesDriver extends MailDriver implements MailDriverContract
                 foreach ($subscriptions as $subscription) {
                     if (($subscription['Endpoint'] ?? '') === $webhookUrl) {
                         $components->info("Webhook already subscribed: {$subscription['SubscriptionArn']}");
-                        Log::info("Webhook already subscribed: {$subscription['SubscriptionArn']}");
+                        //         Log::info("Webhook already subscribed: {$subscription['SubscriptionArn']}");
                         return true;
                     }
                 }
             } catch (Exception $e) {
                 // Log but continue with subscription attempt
-                Log::warning("Error checking existing subscriptions: " . $e->getMessage());
+                //         Log::warning("Error checking existing subscriptions: " . $e->getMessage());
             }
 
             // Create new subscription
@@ -384,7 +384,7 @@ class SesDriver extends MailDriver implements MailDriverContract
 
                 $subscribeResult = $sns->subscribe($subscribeOptions);
 
-                Log::info('Sleeping for 5 secs to take effect...');
+                //         Log::info('Sleeping for 5 secs to take effect...');
                 sleep(5);
 
                 $subscriptionArn = $subscribeResult->get('SubscriptionArn');
@@ -394,10 +394,10 @@ class SesDriver extends MailDriver implements MailDriverContract
                         // If it's pending confirmation, we can still set attributes
                         if ($subscriptionArn === 'pending confirmation') {
                             $components->info("Subscription is pending confirmation, setting raw message delivery");
-                            Log::warning("Subscription is pending confirmation, setting raw message delivery", [
-                                'topicArn' => $topicArn,
-                                'webhookUrl' => $webhookUrl
-                            ]);
+                            //         Log::warning("Subscription is pending confirmation, setting raw message delivery", [
+//                                'topicArn' => $topicArn,
+//                                'webhookUrl' => $webhookUrl
+//                            ]);
 
                             // Set RawMessageDelivery to true for the pending subscription
                             $sns->setSubscriptionAttributes([
@@ -427,7 +427,7 @@ class SesDriver extends MailDriver implements MailDriverContract
                             ]);
 
                             $components->info("RawMessageDelivery set for pending subscription");
-                            Log::info("RawMessageDelivery set for pending subscription");
+                            //         Log::info("RawMessageDelivery set for pending subscription");
 
                             return true;
                         }
@@ -452,38 +452,38 @@ class SesDriver extends MailDriver implements MailDriverContract
                         ]);
 
                         $components->info("SES webhook Delivery policy set successfully");
-                        Log::info("SES webhook Delivery policy set successfully");
-                        Log::info($setAttributesResult);
+                        //         Log::info("SES webhook Delivery policy set successfully");
+                        //         Log::info($setAttributesResult);
 
                         return true;
                     } catch (Exception $e) {
                         $components->error('Failed to set subscription attributes: ' . $e->getMessage());
-                        Log::error('Failed to set subscription attributes', [
-                            'exception' => get_class($e),
-                            'message' => $e->getMessage(),
-                            'subscriptionArn' => $subscriptionArn
-                        ]);
+                        //         Log::error('Failed to set subscription attributes', [
+//                            'exception' => get_class($e),
+//                            'message' => $e->getMessage(),
+//                            'subscriptionArn' => $subscriptionArn
+//                        ]);
                         return false;
                     }
                 }
 
                 $components->info('Subscription created but ARN not returned');
-                Log::warning('SNS subscription created but ARN not returned in response');
+                //         Log::warning('SNS subscription created but ARN not returned in response');
                 return true;
             } catch (Exception $e) {
                 $components->error('Failed to subscribe SES webhook to SNS topic: ' . $e->getMessage());
-                Log::error('Failed to subscribe to SNS topic', [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage()
-                ]);
+                //         Log::error('Failed to subscribe to SNS topic', [
+//                    'exception' => get_class($e),
+//                    'message' => $e->getMessage()
+//                ]);
                 return false;
             }
         } catch (Throwable $e) {
             $components->error('Exception while subscribing to SNS topic: ' . $e->getMessage());
-            Log::error('Failed to subscribe to SNS topic', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('Failed to subscribe to SNS topic', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -512,14 +512,14 @@ class SesDriver extends MailDriver implements MailDriverContract
             }
 
             $components->info('No SES event types enabled in configuration');
-            Log::info('No SES event types enabled in configuration');
+            //         Log::info('No SES event types enabled in configuration');
             return true;
         } catch (Throwable $e) {
             $components->error('Exception while configuring SES events: ' . $e->getMessage());
-            Log::error('Failed to configure SES events', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('Failed to configure SES events', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -550,7 +550,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             }
         }
 
-        Log::debug('Enabled SES event types', ['eventTypes' => $eventTypes]);
+        //         Log::debug('Enabled SES event types', ['eventTypes' => $eventTypes]);
         return $eventTypes;
     }
 
@@ -601,7 +601,7 @@ class SesDriver extends MailDriver implements MailDriverContract
                     if (($destination['Name'] ?? '') === 'mail-tracking-destination') {
                         $eventDestExists = true;
                         $components->info('SES event destination already exists');
-                        Log::info('SES event destination already exists');
+                        //         Log::info('SES event destination already exists');
 
                         // Update the existing destination
                         return $this->updateEventDestination(
@@ -614,7 +614,7 @@ class SesDriver extends MailDriver implements MailDriverContract
                     }
                 }
             } catch (Exception $e) {
-                Log::debug('Error checking event destinations: ' . $e->getMessage());
+                //         Log::debug('Error checking event destinations: ' . $e->getMessage());
                 // Continue with creation
             }
 
@@ -634,21 +634,21 @@ class SesDriver extends MailDriver implements MailDriverContract
                     ]);
 
                     $components->info('SES event destination configured successfully');
-                    Log::info('SES event destination configured successfully', ['eventTypes' => $eventTypes]);
+                    //         Log::info('SES event destination configured successfully', ['eventTypes' => $eventTypes]);
                     return true;
                 } catch (Exception $e) {
                     // Check if it's just because the destination already exists
                     if (strpos($e->getMessage(), 'EventDestinationAlreadyExists') !== false) {
                         $components->info('SES event destination already exists');
-                        Log::info('SES event destination already exists');
+                        //         Log::info('SES event destination already exists');
                         return true;
                     }
 
                     $components->error('Failed to configure SES event destination: ' . $e->getMessage());
-                    Log::error('Failed to configure SES event destination', [
-                        'exception' => get_class($e),
-                        'message' => $e->getMessage()
-                    ]);
+                    //         Log::error('Failed to configure SES event destination', [
+//                        'exception' => get_class($e),
+//                        'message' => $e->getMessage()
+//                    ]);
                     return false;
                 }
             }
@@ -656,10 +656,10 @@ class SesDriver extends MailDriver implements MailDriverContract
             return true;
         } catch (Throwable $e) {
             $components->error('Exception while creating event destination: ' . $e->getMessage());
-            Log::error('Failed to create event destination', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('Failed to create event destination', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -712,22 +712,22 @@ class SesDriver extends MailDriver implements MailDriverContract
                 ]);
 
                 $components->info('SES event destination updated successfully');
-                Log::info('SES event destination updated successfully', ['eventTypes' => $eventTypes]);
+                //         Log::info('SES event destination updated successfully', ['eventTypes' => $eventTypes]);
                 return true;
             } catch (Exception $e) {
                 $components->error('Failed to update SES event destination: ' . $e->getMessage());
-                Log::error('Failed to update SES event destination', [
-                    'exception' => get_class($e),
-                    'message' => $e->getMessage()
-                ]);
+                //         Log::error('Failed to update SES event destination', [
+//                    'exception' => get_class($e),
+//                    'message' => $e->getMessage()
+//                ]);
                 return false;
             }
         } catch (Throwable $e) {
             $components->error('Exception while updating event destination: ' . $e->getMessage());
-            Log::error('Failed to update event destination', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('Failed to update event destination', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -763,14 +763,14 @@ class SesDriver extends MailDriver implements MailDriverContract
                 $parsedUrl['scheme'] !== 'https' ||
                 !preg_match('/^sns\.[a-zA-Z0-9\-]{3,}\.amazonaws\.com(\.cn)?$/', $parsedUrl['host']) ||
                 !str_ends_with($certUrl, '.pem')) {
-                Log::warning('Invalid certificate URL', ['url' => $certUrl]);
+                //         Log::warning('Invalid certificate URL', ['url' => $certUrl]);
                 return false;
             }
 
             // Fetch certificate
             $certificate = @file_get_contents($certUrl);
             if ($certificate === false) {
-                Log::warning('Failed to fetch certificate', ['url' => $certUrl]);
+                //         Log::warning('Failed to fetch certificate', ['url' => $certUrl]);
                 return false;
             }
 
@@ -785,7 +785,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             // Verify signature
             $publicKey = openssl_get_publickey($certificate);
             if (!$publicKey) {
-                Log::warning('Failed to extract public key');
+                //         Log::warning('Failed to extract public key');
                 return false;
             }
 
@@ -796,10 +796,10 @@ class SesDriver extends MailDriver implements MailDriverContract
 
             return $verificationResult === 1;
         } catch (\Throwable $e) {
-            Log::error('SNS signature verification error', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage()
-            ]);
+            //         Log::error('SNS signature verification error', [
+//                'exception' => get_class($e),
+//                'message' => $e->getMessage()
+//            ]);
             return false;
         }
     }
@@ -854,15 +854,15 @@ class SesDriver extends MailDriver implements MailDriverContract
                 config('mails.headers.uuid', 'uuid') . '=' . $uuid
             );
 
-            Log::debug('UUID attached to outgoing SES email', ['uuid' => $uuid]);
+            //         Log::debug('UUID attached to outgoing SES email', ['uuid' => $uuid]);
 
             return $event;
         } catch (Throwable $e) {
             // If there's an error, log it but don't prevent the message from being sent
-            Log::error('Error attaching UUID to outgoing SES email: ' . $e->getMessage(), [
-                'uuid' => $uuid,
-                'exception' => get_class($e)
-            ]);
+            //         Log::error('Error attaching UUID to outgoing SES email: ' . $e->getMessage(), [
+//                'uuid' => $uuid,
+//                'exception' => get_class($e)
+//            ]);
 
             return $event;
         }
@@ -893,7 +893,7 @@ class SesDriver extends MailDriver implements MailDriverContract
                 ]);
 
                 if ($response->successful()) {
-                    Log::info("SES configuration set exists: {$this->configurationSetName}");
+                    //         Log::info("SES configuration set exists: {$this->configurationSetName}");
                     $this->configSetExists = true;
                     return true;
                 }
@@ -912,17 +912,17 @@ class SesDriver extends MailDriver implements MailDriverContract
 
             if ($createResponse->successful() ||
                 str_contains($createResponse->body(), 'ConfigurationSetAlreadyExists')) {
-                Log::info("SES configuration set created: {$this->configurationSetName}");
+                //         Log::info("SES configuration set created: {$this->configurationSetName}");
                 $this->configSetExists = true;
                 return true;
             }
 
-            Log::error('Failed to create SES configuration set: ' . $createResponse->body());
+            //         Log::error('Failed to create SES configuration set: ' . $createResponse->body());
             return false;
         } catch (Throwable $e) {
-            Log::error('Error ensuring configuration set exists: ' . $e->getMessage(), [
-                'exception' => get_class($e)
-            ]);
+            //         Log::error('Error ensuring configuration set exists: ' . $e->getMessage(), [
+//                'exception' => get_class($e)
+//            ]);
             return false;
         }
     }
@@ -959,7 +959,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             if (!empty($mail['tags'][$headerKey])) {
                 $uuid = $mail['tags'][$headerKey][0] ?? null;
                 if ($uuid) {
-                    Log::debug('UUID extracted from SES payload tags', ['uuid' => $uuid]);
+                    //         Log::debug('UUID extracted from SES payload tags', ['uuid' => $uuid]);
                     return $uuid;
                 }
             }
@@ -972,23 +972,23 @@ class SesDriver extends MailDriver implements MailDriverContract
 
                         preg_match("/$headerKey=([^;]+)/", $header['value'], $matches);
                         if (isset($matches[1])) {
-                            Log::debug('UUID extracted from SES payload headers', ['uuid' => $matches[1]]);
+                            //         Log::debug('UUID extracted from SES payload headers', ['uuid' => $matches[1]]);
                             return $matches[1];
                         }
                     }
                 }
             }
 
-            Log::warning('UUID not found in SES payload', [
-                'messageId' => $mail['messageId'] ?? 'unknown'
-            ]);
+            //         Log::warning('UUID not found in SES payload', [
+//                'messageId' => $mail['messageId'] ?? 'unknown'
+//            ]);
             return null;
         } catch (Throwable $e) {
-            Log::error('Error extracting UUID from payload: ' . $e->getMessage(), [
-                'exception' => get_class($e),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
+            //         Log::error('Error extracting UUID from payload: ' . $e->getMessage(), [
+//                'exception' => get_class($e),
+//                'file' => $e->getFile(),
+//                'line' => $e->getLine()
+//            ]);
             return null;
         }
     }
@@ -1025,9 +1025,9 @@ class SesDriver extends MailDriver implements MailDriverContract
 
             return $message['mail']['timestamp'] ?? now()->toIso8601String();
         } catch (Throwable $e) {
-            Log::error('Error extracting timestamp from payload: ' . $e->getMessage(), [
-                'exception' => get_class($e)
-            ]);
+            //         Log::error('Error extracting timestamp from payload: ' . $e->getMessage(), [
+//                'exception' => get_class($e)
+//            ]);
             return now()->toIso8601String();
         }
     }
@@ -1065,10 +1065,10 @@ class SesDriver extends MailDriver implements MailDriverContract
         }
 
         // Log additional context for debugging
-        Log::error('Unable to map SES event', [
-            'message' => $message,
-            'payload' => $payload
-        ]);
+        //         Log::error('Unable to map SES event', [
+//            'message' => $message,
+//            'payload' => $payload
+//        ]);
 
         throw new Exception('Unknown event type');
     }
@@ -1183,7 +1183,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             ->baseUrl("https://email.$region.amazonaws.com");
 
         try {
-            Log::info('Removing email address from SES suppression list', ['email' => $address]);
+            //         Log::info('Removing email address from SES suppression list', ['email' => $address]);
 
             // Using the correct API for removing from suppression list
             return $client->post('/', [
@@ -1192,10 +1192,10 @@ class SesDriver extends MailDriver implements MailDriverContract
                 'Version' => '2010-12-01',
             ]);
         } catch (Throwable $e) {
-            Log::error('Failed to remove email from suppression list: ' . $e->getMessage(), [
-                'email' => $address,
-                'exception' => get_class($e)
-            ]);
+            //         Log::error('Failed to remove email from suppression list: ' . $e->getMessage(), [
+//                'email' => $address,
+//                'exception' => get_class($e)
+//            ]);
 
             // Re-throw ConnectionException but wrap other exceptions
             if ($e instanceof ConnectionException) {

@@ -36,6 +36,9 @@ abstract class MailDriver
             ->firstWhere('uuid', $this->getUuidFromPayload($payload));
     }
 
+    /**
+     * @throws Exception
+     */
     public function getDataFromPayload(array $payload): array
     {
         return collect($this->dataMapping())
@@ -49,6 +52,9 @@ abstract class MailDriver
             ->toArray();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getEventFromPayload(array $payload): string
     {
         foreach ($this->eventMapping() as $event => $mapping) {
@@ -60,6 +66,9 @@ abstract class MailDriver
         throw new Exception('Unknown event type');
     }
 
+    /**
+     * @throws Exception
+     */
     public function logMailEvent($payload): void
     {
         $mail = $this->getMailFromPayload($payload);
@@ -73,8 +82,8 @@ abstract class MailDriver
 
         if (method_exists($this, $method)) {
             // log mail event
-            Log::info('data from payload to store in db');
-            Log::info($data);
+//            Log::info('data from payload to store in db');
+//            Log::info($data);
             $mail->events()->create($data);
 
             // update mail record with timestamp
