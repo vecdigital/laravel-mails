@@ -21,7 +21,12 @@ class AttachUuid
 
         $uuid = Str::uuid()->toString();
 
-        $event->message->getHeaders()->addTextHeader(config('mails.headers.uuid'), $uuid);
+        $headers = $event->message->getHeaders();
+        $headerName = config('mails.headers.uuid');
+
+        if (!$headers->has($headerName)) {
+            $headers->addTextHeader($headerName, $uuid);
+        }
 
         $event = MailProvider::with($provider)->attachUuidToMail($event, $uuid);
     }
