@@ -851,7 +851,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             // Set custom UUID as message tag
             $event->message->getHeaders()->addTextHeader(
                 'X-SES-MESSAGE-TAGS',
-                config('mails.headers.uuid', 'uuid') . '=' . $uuid
+                config('mails.headers.uuid', 'X-Mails-UUID') . '=' . $uuid
             );
 
             //         Log::debug('UUID attached to outgoing SES email', ['uuid' => $uuid]);
@@ -953,7 +953,7 @@ class SesDriver extends MailDriver implements MailDriverContract
             }
 
             // Look for the UUID in message tags
-            $headerKey = config('mails.headers.uuid', 'uuid');
+            $headerKey = config('mails.headers.uuid', 'X-Mails-UUID');
 
             // Check in tags (primary location)
             if (!empty($mail['tags'][$headerKey])) {
