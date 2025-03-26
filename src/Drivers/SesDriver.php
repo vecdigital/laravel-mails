@@ -840,6 +840,10 @@ class SesDriver extends MailDriver implements MailDriverContract
     public function attachUuidToMail(MessageSending $event, string $uuid): MessageSending
     {
         try {
+            if (config('mail.default') !== $event->data['mailer']) {
+                return $event;
+            }
+
             // Ensure config set exists before trying to use it
             if (!$this->configSetExists) {
                 $this->ensureConfigSetExists();
